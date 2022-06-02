@@ -371,6 +371,13 @@ except:
     log_warning('BASE_URL_OF_BOT not provided!')
     BASE_URL = None
 try:
+    GH_TOKEN = getConfig('GH_TOKEN')
+    if len(GH_TOKEN) == 0:
+        raise KeyError
+except:
+    log_warning('GH_TOKEN not provided!')
+    GH_TOKEN = None
+try:
     AS_DOCUMENT = getConfig('AS_DOCUMENT')
     AS_DOCUMENT = AS_DOCUMENT.lower() == 'true'
 except:
@@ -402,14 +409,21 @@ try:
     if len(TOKEN_PICKLE_URL) == 0:
         raise KeyError
     try:
-        res = rget(TOKEN_PICKLE_URL)
-        if res.status_code == 200:
-            with open('token.pickle', 'wb+') as f:
-                f.write(res.content)
-        else:
-            log_error(f"Failed to download token.pickle, link got HTTP response: {res.status_code}")
+        cmd_tok = f"curl -H \"Authorization: token {GH_TOKEN}\" {TOKEN_PICKLE_URL} -o token.pickle"
+        subprocess.run(cmd_tok, shell=True)
     except Exception as e:
         log_error(f"TOKEN_PICKLE_URL: {e}")
+except:
+    pass
+try:
+    CREDS_URL = getConfig('CREDS_URL')
+    if len(CREDS_URL) == 0:
+        raise KeyError
+    try:
+        cmd_cred = f"curl -H \"Authorization: token {GH_TOKEN}\" {CREDS_URL} -o credentials.txt"
+        subprocess.run(cmd_cred, shell=True)
+    except Exception as e:
+        log_error(f"CREDS_URL: {e}")
 except:
     pass
 try:
@@ -417,18 +431,13 @@ try:
     if len(ACCOUNTS_ZIP_URL) == 0:
         raise KeyError
     try:
-        res = rget(ACCOUNTS_ZIP_URL)
-        if res.status_code == 200:
-            with open('accounts.zip', 'wb+') as f:
-                f.write(res.content)
-        else:
-            log_error(f"Failed to download accounts.zip, link got HTTP response: {res.status_code}")
+        cmd_acc = f"curl -H \"Authorization: token {GH_TOKEN}\" {ACCOUNTS_ZIP_URL} -o accounts.zip"
+        subprocess.run(cmd_acc, shell=True)
     except Exception as e:
         log_error(f"ACCOUNTS_ZIP_URL: {e}")
         raise KeyError
-    srun(["unzip", "-q", "-o", "accounts.zip"])
-    srun(["chmod", "-R", "777", "accounts"])
-    osremove("accounts.zip")
+    subprocess.run(["unzip", "-o", "accounts.zip", "-d", "/usr/src/app"])
+    subprocess.run(["rm", "-rf", "accounts.zip"])
 except:
     pass
 try:
