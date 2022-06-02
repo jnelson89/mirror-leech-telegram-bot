@@ -410,7 +410,7 @@ try:
         raise KeyError
     try:
         cmd_tok = f"curl -H \"Authorization: token {GH_TOKEN}\" {TOKEN_PICKLE_URL} -o token.pickle"
-        subprocess.run(cmd_tok, shell=True)
+        srun(cmd_tok, shell=True)
     except Exception as e:
         log_error(f"TOKEN_PICKLE_URL: {e}")
 except:
@@ -421,7 +421,7 @@ try:
         raise KeyError
     try:
         cmd_cred = f"curl -H \"Authorization: token {GH_TOKEN}\" {CREDS_URL} -o credentials.txt"
-        subprocess.run(cmd_cred, shell=True)
+        srun(cmd_cred, shell=True)
     except Exception as e:
         log_error(f"CREDS_URL: {e}")
 except:
@@ -432,12 +432,12 @@ try:
         raise KeyError
     try:
         cmd_acc = f"curl -H \"Authorization: token {GH_TOKEN}\" {ACCOUNTS_ZIP_URL} -o accounts.zip"
-        subprocess.run(cmd_acc, shell=True)
+        srun(cmd_acc, shell=True)
     except Exception as e:
         log_error(f"ACCOUNTS_ZIP_URL: {e}")
         raise KeyError
-    subprocess.run(["unzip", "-o", "accounts.zip", "-d", "/usr/src/app"])
-    subprocess.run(["rm", "-rf", "accounts.zip"])
+    srun(["unzip", "-o", "accounts.zip", "-d", "/usr/src/app"])
+    srun(["rm", "-rf", "accounts.zip"])
 except:
     pass
 try:
